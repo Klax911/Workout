@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Allenamento Circuiti PWA</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#121212">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #121212;
+      color: #f1f1f1;
+    }
+    h1, h2 {
+      color: #ffffff;
+    }
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .day {
+      background: #2c2c2c;
+      padding: 20px 0;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: bold;
+      color: #fff;
+      font-size: 16px;
+      min-height: 50px;
+    }
+    .day:hover {
+      background: #444;
+    }
+    .workout-details {
+      display: none;
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .exercise {
+      margin-bottom: 15px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      background: #2c2c2c;
+      border: none;
+      color: #fff;
+    }
+    button {
+      background: #3498db;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    .timer {
+      font-size: 1.5em;
+      margin: 10px 0;
+      color: #76ff03;
+    }
+  </style>
+</head>
+<body>
+<h1>📅 Allenamento Mensile a Circuiti</h1>
+<p>Seleziona un giorno per vedere il circuito.</p>
+
+<div class="calendar" id="calendar"></div>
+
+<div class="workout-details" id="workoutDetails">
+  <h2 id="selectedDayTitle">Giorno</h2>
+  <div class="exercise-list" id="exerciseList"></div>
+  <button onclick="startTimer()">⏱ Avvia Timer Recupero</button>
+  <div class="timer" id="timerDisplay">00:00</div>
+</div>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js');
+  }
+
+  const daysInMonth = 30;
+  const calendar = document.getElementById('calendar');
+  const workoutDetails = document.getElementById('workoutDetails');
+  const selectedDayTitle = document.getElementById('selectedDayTitle');
+  const exerciseList = document.getElementById('exerciseList');
+  const timerDisplay = document.getElementById('timerDisplay');
+
+  for (let i = 1; i <= daysInMonth; i++) {
+    const day = document.createElement('div');
+    day.className = 'day';
+    day.innerText = i;
+    day.onclick = () => loadWorkout(i);
+    calendar.appendChild(day);
+  }
+
+  function loadWorkout(day) {
+    selectedDayTitle.innerText = 'Giorno ' + day;
+    workoutDetails.style.display = 'block';
+
+    const exercises = [
+      { name: 'Curl Bicipiti', reps: '12', strategy: 'Tempo lento (2-0-2)' },
+      { name: 'Arnold Press', reps: '10', strategy: 'RPE 8' },
+      { name: 'Overhead Triceps Extension', reps: '12', strategy: 'LLP' }
+    ];
+
+    exerciseList.innerHTML = '';
+    exercises.forEach((ex, idx) => {
+      const div = document.createElement('div');
+      div.className = 'exercise';
+      div.innerHTML = `
+        <label>Esercizio ${idx + 1}: ${ex.name}</label>
+        Ripetizioni: ${ex.reps}<br>
+        Strategia: ${ex.strategy}<br>
+        Peso (kg): <input type="number" placeholder="Inserisci peso usato">
+      `;
+      exerciseList.appendChild(div);
+    });
+  }
+
+  let timer;
+  function startTimer(duration = 60) {
+    let time = duration;
+    clearInterval(timer);
+    timer = setInterval(() => {
+      const mins = String(Math.floor(time / 60)).padStart(2, '0');
+      const secs = String(time % 60).padStart(2, '0');
+      timerDisplay.innerText = \`\${mins}:\${secs}\`;
+      if (--time < 0) clearInterval(timer);
+    }, 1000);
+  }
+</script>
+</body>
+</html>

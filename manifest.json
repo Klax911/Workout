@@ -1,0 +1,10 @@
+
+{
+  "name": "Allenamento Circuiti",
+  "short_name": "Allenamento",
+  "start_url": "allenamento_circuiti_pwa.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "icons": []
+}
